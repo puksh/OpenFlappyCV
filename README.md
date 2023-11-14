@@ -1,2 +1,2 @@
-# OpenMarioCV
-Mario Game Controlled by OpenCV
+# OpenFlappyCV
+Glappy Bird Controlled by OpenCV
