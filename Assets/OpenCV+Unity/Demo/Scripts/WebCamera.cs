@@ -53,9 +53,12 @@ namespace OpenCvSharp.Demo
 
 				// get device index
 				int cameraIndex = -1;
-				for (int i = 0; i < WebCamTexture.devices.Length && -1 == cameraIndex; i++)
-				{
-					if (WebCamTexture.devices[i].name == value)
+                Debug.Log(value);
+                for (int i = 0; i < WebCamTexture.devices.Length && -1 == cameraIndex; i++)
+                {
+                    Debug.Log(WebCamTexture.devices[i].name);
+
+                    if (WebCamTexture.devices[i].name == value)
 						cameraIndex = i;
 				}
 
@@ -68,8 +71,15 @@ namespace OpenCvSharp.Demo
 					// read device params and make conversion map
 					ReadTextureConversionParameters();
 
-					webCamTexture.Play();
-				}
+                    try
+                    {
+                        webCamTexture.Play();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError("Error initializing webcam: " + ex.Message);
+                    }
+                }
 				else
 				{
 					throw new ArgumentException(String.Format("{0}: provided DeviceName is not correct device identifier", this.GetType().Name));
@@ -110,7 +120,8 @@ namespace OpenCvSharp.Demo
 		/// </summary>
 		protected virtual void Awake()
 		{
-			if (WebCamTexture.devices.Length > 0)
+			Debug.Log(WebCamTexture.devices.Length);
+            if (WebCamTexture.devices.Length > 0)
 				DeviceName = WebCamTexture.devices[WebCamTexture.devices.Length - 1].name;
 		}
 
