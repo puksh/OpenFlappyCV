@@ -1,73 +1,84 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using OpenCvSharp;
 using UnityEngine.UI;
+using OpenCvSharp;
 
 public class FaceDetector : MonoBehaviour
 {
+    private CascadeClassifier faceCascade;
+    private CascadeClassifier eyesCascade;
 
-    WebCamTexture _webCamTexture;
-    CascadeClassifier cascade;
-
-    OpenCvSharp.Rect MyFace;
+    private WebCamTexture webcamTexture;
+    private RawImage rawImage;
 
     void Start()
     {
-        WebCamDevice[] devices = WebCamTexture.devices;
 
-        _webCamTexture = new WebCamTexture(devices[0].name);
-        _webCamTexture.Play();
+        string faceCascadePath = "haarcascade_frontalface_alt";
+        string eyesCascadePath = "haarcascade_eye_tree_eyeglasses";
 
-        string cascadePath = Application.dataPath + "/haarcascade_frontalface_default.xml";
+        faceCascade = new CascadeClassifier(Resources.Load<TextAsset>(faceCascadePath).bytes);
+        eyesCascade = new CascadeClassifier(Resources.Load<TextAsset>(eyesCascadePath).bytes);
 
-        //Is .xml correctly loaded?
-
-        if (System.IO.File.Exists(cascadePath))
+        if (!faceCascade.Load(faceCascadePath))
         {
-            cascade = new CascadeClassifier(cascadePath);
-            if (cascade.Empty())
-            {
-                Debug.LogError("Failed to load cascade classifier.");
-            }
+            Debug.LogError("Error loading face cascade.");
+            return;
         }
-        else
+
+        if (!eyesCascade.Load(eyesCascadePath))
         {
-            Debug.LogError("Cascade XML file not found at: " + cascadePath);
+            Debug.LogError("Error loading eyes cascade.");
+            return;
         }
+
+        rawImage = GetComponent<RawImage>();
+
+        // Start camera capture (adjust device number if needed).
+        webcamTexture = new WebCamTexture();
+        webcamTexture.Play();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        Mat frame = OpenCvSharp.Unity.TextureToMat(_webCamTexture);
+        // Capture a frame from the webcam.
+        Mat frame = OpenCvSharp.Unity.TextureToMat(webcamTexture);
 
-        //Calculates the coordinates of someone's face on camera
-        findNewFace(frame);
-
-        //Creates a box around the detected face (causes the rawImage to not refresh?)
-        //showRectangle(frame);
+        //DetectAndDisplay(frame);
     }
-
-    void findNewFace(Mat frame)
+    /*
+    void DetectAndDisplay(Mat frame)
     {
-        var faces = cascade.DetectMultiScale(frame, 1.1, 2, HaarDetectionType.ScaleImage);
+        Mat frameGray = new Mat();
+        Cv2.CvtColor(frame, frameGray, ColorConversionCodes.BGRA2GRAY);
+        Cv2.EqualizeHist(frameGray, frameGray);
 
-        if(faces.Length >= 1 )
+        // Detect faces
+        OpenCvSharp.Rect[] faces = faceCascade.DetectMultiScale(frameGray, 1.1, 3, HaarDetectionType.DoCannyPruning, new OpenCvSharp.Size(30, 30));
+
+        foreach (OpenCvSharp.Rect rect in faces)
         {
-            Debug.Log(faces[0].Location);
-            MyFace = faces[0];
+            // Draw rectangle around face
+            Cv2.Rectangle(frame, rect, Scalar.Magenta, 4);
+
+            // Extract face region
+            Mat faceROI = new Mat(frameGray, rect);
+
+            // Detect eyes in the face region
+            OpenCvSharp.Rect[] eyes = eyesCascade.DetectMultiScale(faceROI, 1.1, 3, HaarDetectionType.DoCannyPruning, new OpenCvSharp.Size(20, 20));
+
+            foreach (OpenCvSharp.Rect eyeRect in eyes)
+            {
+                // Draw circle around each eye
+                Point eyeCenter = new Point(rect.X + eyeRect.X + eyeRect.Width / 2, rect.Y + eyeRect.Y + eyeRect.Height / 2);
+                int radius = (int)Mathf.Round((eyeRect.Width + eyeRect.Height) * 0.25f);
+                Cv2.Circle(frame, eyeCenter, radius, Scalar.Blue, 4);
+
+                Debug.Log("true");
+            }
         }
-    }
 
-    void showRectangle(Mat frame)
-    {
-        if(MyFace != null)
-        {
-            frame.Rectangle(MyFace, new Scalar(250, 0, 0), 2);
-        }
-
-        GetComponent<RawImage>().material.mainTexture = OpenCvSharp.Unity.MatToTexture(frame);
-
-    }
+        // Display the frame
+        Texture2D texture = OpenCvSharp.Unity.MatToTexture(frame, rawImage.texture as Texture2D ?? new Texture2D(frame.Width, frame.Height, TextureFormat.RGBA32, false));
+        rawImage.texture = texture;
+    }*/
 }

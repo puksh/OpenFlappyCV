@@ -21,7 +21,7 @@ namespace OpenCvSharp
         /// <summary>
         /// Default constructor
         /// </summary>
-        public CascadeClassifier()
+        public CascadeClassifier(byte[] bytes)
 	    {
             ptr = NativeMethods.objdetect_CascadeClassifier_new();               
 	    }
