@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class FlappyFly : MonoBehaviour
 {
-    [SerializeField] private float _velocity = 2f;
+    [SerializeField] private float _velocity = 1.4f;
     [SerializeField] private float _rotationSpeed = 15f;
 
     private Rigidbody2D _body2D;
