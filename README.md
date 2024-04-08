@@ -1,2 +1,2 @@
 # OpenFlappyCV
-Glappy Bird Controlled by OpenCV
+Flappy Bird Controlled by OpenCV
