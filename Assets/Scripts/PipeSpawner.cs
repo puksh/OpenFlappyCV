@@ -35,12 +35,5 @@ public class PipeSpawner : MonoBehaviour
         GameObject pipes = Instantiate(_pipes, spawnPos, Quaternion.identity);
 
         Destroy(pipes, 10f);
-
-
-
     }
-
-
-
-
 }

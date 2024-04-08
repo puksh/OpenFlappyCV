@@ -10,7 +10,6 @@ public class FaceTrackingScript : MonoBehaviour
     private CascadeClassifier eyesCascade;
     [SerializeField] Rigidbody2D _body2D;
     private WebCamTexture webcamTexture;
-
     //[SerializeField] Camera mainCamera;
 
     void Start()
@@ -39,7 +38,7 @@ public class FaceTrackingScript : MonoBehaviour
 
         //rawImage = GetComponent<RawImage>();
 
-        // Start camera capture (adjust device number if needed).
+            // Start camera capture (adjust device number if needed).
         webcamTexture = new WebCamTexture();
         webcamTexture.Play();
     }
@@ -48,8 +47,8 @@ public class FaceTrackingScript : MonoBehaviour
     {
         // Capture a frame from the webcam.
         Mat frame = OpenCvSharp.Unity.TextureToMat(webcamTexture);
-
         DetectAndDisplay(frame);
+        
     }
 
     void DetectAndDisplay(Mat frame)
@@ -64,7 +63,7 @@ public class FaceTrackingScript : MonoBehaviour
         foreach (OpenCvSharp.Rect rect in faces)
         {
             // Draw rectangle around face
-            //Cv2.Rectangle(frame, rect, Scalar.Magenta, 4);
+            Cv2.Rectangle(frame, rect, Scalar.Magenta, 4);
 
             // Extract face region
             Mat faceROI = new Mat(frameGray, rect);
@@ -95,7 +94,7 @@ public class FaceTrackingScript : MonoBehaviour
 
     private void Jump()
     {
-        
+        Debug.Log("eye jump");
         _body2D.velocity = Vector2.up * _velocity;
     }
 
